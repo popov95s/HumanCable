@@ -6,9 +6,8 @@
 
   This example code is in the public domain.
 */
-/* Baud Rate 57600; 1 byte opening closing sequence; 13 byte message */
-
-int asciiDecimal[] = {255, 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 10, 0};
+/* Baud Rate 57600; 2 byte opening closing sequence; 13 byte message */
+int asciiDecimal[] = {255, 255, 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 10, 0, 0};
 int indexOfSendStr = 0;
 int indexOfSendBits = 0;
 // the setup routine runs once when you press reset:
@@ -27,7 +26,7 @@ void loop() {
   int sensorValue = analogRead(A1);
   // Serial.println("Read bit: ");
   Serial.write(map(sensorValue, 0, 1024, 0, 255));
-  if (indexOfSendStr == 14) {
+  if (indexOfSendStr == 16) {
     indexOfSendStr = 0;
     indexOfSendBits = 0;
   }

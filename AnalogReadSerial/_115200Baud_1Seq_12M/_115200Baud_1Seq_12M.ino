@@ -6,7 +6,7 @@
 
   This example code is in the public domain.
 */
-/* Baud Rate 57600; 1 byte opening closing sequence; 13 byte message */
+/* Baud Rate 115200; 1 byte opening closing sequence; 13 byte message */
 
 int asciiDecimal[] = {255, 72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 10, 0};
 int indexOfSendStr = 0;
@@ -14,7 +14,7 @@ int indexOfSendBits = 0;
 // the setup routine runs once when you press reset:
 void setup() {
   // initialize serial communication at 9600 bits per second:
-  Serial.begin(57600);
+  Serial.begin(115200);
   pinMode(5, OUTPUT);
   pinMode(1, INPUT);
 

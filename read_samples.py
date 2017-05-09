@@ -47,7 +47,7 @@ def read_serial_forever():
 			if values:
 				values=returnBitArray(values)
 				try:
-					print(str(values),file=f)
+					print(' '.join(map(str,values)),file=f)
 				except:
 					print("file nf")
 				print(str(values))

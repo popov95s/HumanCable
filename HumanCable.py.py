@@ -52,10 +52,10 @@ def returnBitArray(sample):
         for bit in sample:
             if(bit<15):
                 bitarray.append(0)
-            elif bit>245:
+            elif bit>220:
                 bitarray.append(1)
             else:
-                bitarray.append(-1)
+                bitarray.append(2)
     return bitarray
 # initialization, plot nothing (this is also called on resize)
 def init():
@@ -78,7 +78,18 @@ def check_all_ones(buffer, check_bit):
         if bit != check_bit:
             return False
     return True
-
+def check_opening_sequence(buffer):
+    print (list(buffer.get_samples)[::1])
+    if list(buffer.get_samples)[::-1] ==[1,1,1,1,1,1,1,1]:
+        return True
+    else: 
+        return False
+    
+def check_closing_sequence(buffer):
+    if list(buffer.get_samples)[::-1] ==  [0,0,0,0,0,0,0,0]:
+        return True
+    else:
+        return False
 def has_invalid(buffer):
     for bit in buffer.get_samples:
         if bit!=0 and bit!=1:
@@ -97,7 +108,7 @@ def read_serial_forever():
                     break
                 if values and len(list(values))==1: 
                     closing_sequence_checker.insert_new(np.array(returnBitArray(values)).astype(np.int))
-                    if check_all_ones(closing_sequence_checker,1) == True:
+                    if check_opening_sequence(closing_sequence_checker) == True:
                         print(" Opening sequence")
                         globals.openSeq= True
                         
@@ -113,7 +124,8 @@ def read_serial_forever():
                     break    
                 if values and len(list(values))==8:
                     opening_sequence_checker.insert_new(np.array(returnBitArray(values)).astype(np.int))
-                    if check_all_ones(opening_sequence_checker, 0)==True or has_invalid(opening_sequence_checker)==True:
+                    print (list(opening_sequence_checker.get_samples)[::-1])
+                    if check_closing_sequence(opening_sequence_checker)==True or has_invalid(opening_sequence_checker)==True:
                         globals.openSeq=False
                         print ("Closed sequence")
                         time.sleep(0.01)

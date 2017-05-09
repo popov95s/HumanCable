@@ -29,32 +29,12 @@ line1 = Line2D([], [], color='red', linewidth=0.5)
 ax1.add_line(line1)
 
 
-def isTouching(sample):
-    if sample < 1.0:
-        print(" No event")
-    elif sample < 3.0:
-        print(" Hover")
-    elif sample < 7.0:
-        print(" Touched shield")
-    elif sample < 100.0:
-        print(" Wire touch")
-    
 def text_from_bits(bits, encoding='utf-8', errors='surrogatepass'):
     n = int('0b' + ''.join(str(e) for e in bits), 2)
     return n.to_bytes((n.bit_length() + 7) // 8, 'big').decode(encoding, errors) or '\0'
 globals.openSeq=False
 
-def returnBitArray(sample):
-    bitarray=[]
-    if sample is not None:
-        for bit in sample:
-            if(bit<15):
-                bitarray.append(0)
-            elif bit>245:
-                bitarray.append(1)
-            else:
-                bitarray.append(-1)
-    return bitarray
+
 # initialization, plot nothing (this is also called on resize)
 def init():
     # called on first plot or redraw
@@ -71,12 +51,23 @@ def animate(i):
     # return line(s) to be drawn
     return line1,
 
-def check_all_ones(buffer, check_bit):
+def check_all_ones(buffer,checkBit):
     for bit in buffer.get_samples:
-        if bit != check_bit:
+        if bit!=checkBit:
             return False
     return True
 
+def check_opening_sequence(buffer):
+    if list(buffer.get_samples) == [0,0,0,1,1,1,1,1]:
+        return True
+    else: 
+        return False
+    
+def check_closing_sequence(buffer):
+    if list(buffer.get_samples) == [0,0,0,0,0,0,1,1]:
+        return True
+    else:
+        return False
 def has_invalid(buffer):
     for bit in buffer.get_samples:
         if bit!=0 and bit!=1:
@@ -88,9 +79,10 @@ def read_serial_forever():
     
     with open('sample.txt') as sample_file:
         for line in sample_file:
-            print (line)
+            counter =0 
             for bit in line:
                 if bit.isdigit():
+                    #print (bit)
                     if globals.openSeq is False:
                         opening_sequence_checker.insert_new(np.array(list(bit)).astype(np.int))
                         data.insert_new((np.array(list(bit)).astype(np.int))) 
@@ -100,13 +92,24 @@ def read_serial_forever():
                             continue
                     else:
                         closing_sequence_checker.insert_new(np.array(list(bit)).astype(np.int))
+                        #print (closing_sequence_checker.get_samples)
                         data.insert_new((np.array(list(bit)).astype(np.int)))
-                        if check_all_ones(closing_sequence_checker,1)== True  or has_invalid(opening_sequence_checker)==True:
+                        if check_all_ones(closing_sequence_checker,0)== True  or has_invalid(opening_sequence_checker)==True:
                             print (" Closing Sequence")
                             globals.openSeq=False
+                            counter=0
                             continue 
-                        print(closing_sequence_checker.get_samples)
-                        print(text_from_bits((closing_sequence_checker.get_samples)))#[::-1]))
+                        elif(counter == 8):
+                           # print(closing_sequence_checker.get_samples)
+                          #  print(counter)
+                            try:
+                                print(text_from_bits(closing_sequence_checker.get_samples[::-1]))
+                                print("Printed" + str(closing_sequence_checker.get_samples[::-1]))
+                            except:
+                                print("Cannot print " +  str(closing_sequence_checker.get_samples[::-1]))
+                            counter=0
+                        counter+=1
+                
             # while globals.openSeq is False :
             #     try:
             #         values = serial_port.read(1)
