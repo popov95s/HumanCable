@@ -1,5 +1,5 @@
 import serial
-import ringbuffer
+import Analysis.ringbuffer as ringbuffer
 import numpy as np
 import time
 import threading
@@ -8,14 +8,14 @@ import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from matplotlib.lines import Line2D
-import globals
+import Analysis.globals as globals
 from msvcrt import getch
+import sys
 
 
 
 
-
-serial_port = serial.Serial('COM3', baudrate=57600, timeout=1)
+serial_port = serial.Serial('COM3', baudrate=int(sys.argv[2]), timeout=1)
 serial_port.flush()
     
 def text_from_bits(bits, encoding='utf-8', errors='surrogatepass'):
@@ -37,11 +37,10 @@ def returnBitArray(sample):
 
 
 
-
-
 def read_serial_forever():
-	while True:
-		f = open("sample.txt", 'a') 
+	
+	f = open("Analysis/" + str(sys.argv[1]), 'a') 
+	for i in range(0,1000):
 		try:
 			values=serial_port.read(100)
 			if values:
@@ -50,11 +49,13 @@ def read_serial_forever():
 					print(' '.join(map(str,values)),file=f)
 				except:
 					print("file nf")
-				print(str(values))
 		except:
 			print("Exiting")
 			break
-		time.sleep(0.01)
 	
+
+start_time = time.time()	
 read_serial_forever()
+print (time.time()- start_time)
+print ("Done")
 serial_port.close() # will cause error, forcing close of thread

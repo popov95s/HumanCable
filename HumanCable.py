@@ -1,5 +1,5 @@
 import serial
-import ringbuffer
+import Analysis.ringbuffer as ringbuffer
 import numpy as np
 import time
 import threading
@@ -8,9 +8,9 @@ import matplotlib
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from matplotlib.lines import Line2D
-import globals
+import Analysis.globals as globals
 from msvcrt import getch
-
+import sys
 BUFFER_SIZE = 500
 data = ringbuffer.RingBuffer(BUFFER_SIZE)
 
@@ -28,7 +28,7 @@ ax1.set_ylim(0, 255)
 line1 = Line2D([], [], color='red', linewidth=0.5)
 ax1.add_line(line1)
 
-serial_port = serial.Serial('COM3', baudrate=57600, timeout=1)
+serial_port = serial.Serial('COM3', baudrate=int(sys.argv[1]), timeout=1)
 serial_port.flush()
 
 def isTouching(sample):
@@ -112,10 +112,10 @@ def read_serial_forever():
                         print(" Opening sequence")
                         globals.openSeq= True
                         
-                        time.sleep(0.01)
+                       # time.sleep(0.01)
                         break
                     data.insert_new(np.array(list(values)).astype(np.int))
-                time.sleep(0.01)
+                #time.sleep(0.01)
             while globals.openSeq is True:
                 try:
                     values = serial_port.read(8)
@@ -128,20 +128,23 @@ def read_serial_forever():
                     if check_closing_sequence(opening_sequence_checker)==True or has_invalid(opening_sequence_checker)==True:
                         globals.openSeq=False
                         print ("Closed sequence")
-                        time.sleep(0.01)
+                       # time.sleep(0.01)
                         break
                     tmp = np.array(list(values))
                     #isTouching(np.std(tmp))
                     if check_all_ones(opening_sequence_checker,1)==False:
-                        print(text_from_bits(returnBitArray(values)[::-1]))
+                        try :
+                            print(text_from_bits(returnBitArray(values)[::-1]))
+                        except: 
+                            print("")
                     data.insert_new(tmp.astype(np.int))
                 else:
                     print ("Closed sequence because of lack of number of values")
                     globals.openSeq=False
-                    time.sleep(0.01)
+                   # time.sleep(0.01)
                     break
 
-                time.sleep(0.01)
+               # time.sleep(0.01)
     except KeyboardInterrupt:
         exit(0)
 t = threading.Thread(target=read_serial_forever, args=())
