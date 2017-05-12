@@ -99,7 +99,7 @@ def has_invalid(buffer):
 def read_serial_forever():
     global data
     try :
-        while True:
+        for i in range(0,1000):
             while globals.openSeq is False :
                 try:
                     values = serial_port.read(1)
@@ -124,7 +124,7 @@ def read_serial_forever():
                     break    
                 if values and len(list(values))==8:
                     opening_sequence_checker.insert_new(np.array(returnBitArray(values)).astype(np.int))
-                    print (list(opening_sequence_checker.get_samples)[::-1])
+                    #print (list(opening_sequence_checker.get_samples)[::-1])
                     if check_closing_sequence(opening_sequence_checker)==True or has_invalid(opening_sequence_checker)==True:
                         globals.openSeq=False
                         print ("Closed sequence")

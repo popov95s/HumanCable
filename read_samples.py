@@ -27,9 +27,9 @@ def returnBitArray(sample):
     bitarray=[]
     if sample is not None:
         for bit in sample:
-            if(bit<15):
+            if(bit<127.5):
                 bitarray.append(0)
-            elif bit>245:
+            elif bit>127.5:
                 bitarray.append(1)
             else:
                 bitarray.append(2)
