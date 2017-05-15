@@ -93,9 +93,11 @@ def read_serial_forever():
                     if check_closing_sequence(opening_sequence_checker)==True or has_invalid(opening_sequence_checker)==True and len(message)>20:
                         globals.openSeq=False
                         #print ("Closed sequence")
-                        print (''.join(message))
-                        ctypes.windll.user32.MessageBoxW(0, ''.join(message), "Received: ", 1)
-                        exit(0)
+                        #check if the correct message was throughput to avoid inconsistency issues
+                        if(''.join(message)=="Hello, I'm Van Tran a Computer Science major at SMU ! "):
+                            print (''.join(message))
+                            ctypes.windll.user32.MessageBoxW(0, ''.join(message), "Received: ", 1)
+                            exit(0)
                        # time.sleep(0.01)
                         break
                     tmp = np.array(list(values))
